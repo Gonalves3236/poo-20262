@@ -1,0 +1,17 @@
+[
+  {
+    "nome": "Zezinho",
+    "codigo": 100,
+    "salarioBruto": 1000.0
+  },
+  {
+    "nome": "Huginho",
+    "codigo": 200,
+    "salarioBruto": 2000.0
+  },
+  {
+    "nome": "Luizinho",
+    "codigo": 300,
+    "salarioBruto": 3000.0
+  }
+]

@@ -1,3 +1,4 @@
+package br.pucrs.poo;
 
 import java.io.Serializable;
 

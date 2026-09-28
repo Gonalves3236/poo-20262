@@ -1,16 +1,26 @@
+package br.pucrs.poo;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.*;
-import java.lang.reflect.Type;
+import java.io.BufferedReader;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.Writer;
+
 import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.nio.file.Files;
 
 import java.nio.charset.Charset;
-
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.List;
 
 public class CadastroFuncionarios {
 
@@ -86,42 +96,32 @@ public class CadastroFuncionarios {
         return rel.toString();
     }
 
+    private static final TypeToken<List<Funcionario>> LISTA_FUNCIONARIOS = new TypeToken<>() {};
 
-    public void writeJson(String filename) {
-        Gson gson = new Gson();
-        // converte objetos Java para JSON e retorna JSON como String
-        String json = gson.toJson(lista);
+    private static final Gson GSON = new GsonBuilder()
+        .setPrettyPrinting()   // JSON indentado; remova se quiser o arquivo compacto
+        .create();
 
-        try {
-            //Escreve Json convertido em arquivo chamado "file.json"
-            FileWriter writer = new FileWriter(filename);
-            writer.write(json);
-            writer.close();
-
+    public void writeJson(String fileName) {
+        Path arquivo = Path.of(fileName);
+        try (Writer writer = Files.newBufferedWriter(arquivo, StandardCharsets.UTF_8)) {
+            GSON.toJson(lista, LISTA_FUNCIONARIOS.getType(), writer);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.printf("Erro ao gravar JSON em  %s: %s %n", fileName, e.getMessage());
+
         }
     }
 
-    public void readJson(String filename) {
-        Gson gson = new Gson();
-
-        // GSON tem um problema com desserialização de genéricos
-        // ver: https://sites.google.com/site/gson/gson-user-guide#TOC-Collections-Examples
-        Type funcType = new TypeToken<ArrayList<Funcionario>>() {}.getType();
-
-        try {
-
-            BufferedReader br = new BufferedReader(new FileReader(filename));
-
-            //Converte String JSON para objeto Java
-             lista = gson.fromJson(br, funcType);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+     public List<Funcionario> readJson(String fileName)  {
+         Path arquivo = Path.of("funcionarios.json");
+         try (Reader reader = Files.newBufferedReader(arquivo, StandardCharsets.UTF_8)) {
+             lista = GSON.fromJson(reader, LISTA_FUNCIONARIOS.getType());
+         } catch (IOException e) {
+             System.out.printf("\nJSON inválido em %s: %s\n",fileName, e.getMessage());
+         }
+         return lista;
     }
+
 
     public void writeBin(String filename) {
         Path caminho = Paths.get(filename);
